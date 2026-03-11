@@ -1,0 +1,83 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and game statistics",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique user ID from Firebase Auth" },
+        "displayName": { "type": "string", "description": "User's display name" },
+        "photoURL": { "type": "string", "description": "User's profile picture URL" },
+        "chips": { "type": "integer", "description": "Current chip count" },
+        "totalScore": { "type": "integer", "description": "Cumulative score won throughout all games" },
+        "totalWins": { "type": "integer", "description": "Total games won" },
+        "totalGames": { "type": "integer", "description": "Total games played" },
+        "createdAt": { "type": "object", "description": "Account creation timestamp (Firestore Timestamp)" },
+        "lastPlayedAt": { "type": "object", "description": "Last time the user played (Firestore Timestamp)" }
+      },
+      "required": ["uid", "displayName", "chips", "totalScore"]
+    },
+    "GameSession": {
+      "title": "GameSession",
+      "description": "Details of a single game session",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string", "description": "Unique session ID" },
+        "playerUid": { "type": "string", "description": "UID of the player" },
+        "betAmount": { "type": "integer", "description": "Amount bet in this session" },
+        "result": { "type": "string", "enum": ["win", "loss", "draw"], "description": "Outcome of the game" },
+        "multiplier": { "type": "integer", "description": "Multiplier applied to the bet" },
+        "playerCards": { "type": "array", "items": { "type": "string" }, "description": "Cards dealt to the player" },
+        "dealerCards": { "type": "array", "items": { "type": "string" }, "description": "Cards dealt to the dealer" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "When the session occurred" }
+      },
+      "required": ["sessionId", "playerUid", "betAmount", "result", "timestamp"]
+    },
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "A snapshot of top players for the leaderboard",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User UID" },
+        "displayName": { "type": "string", "description": "User's display name" },
+        "chips": { "type": "integer", "description": "Total chips" },
+        "totalScore": { "type": "integer", "description": "Cumulative score" },
+        "lastUpdated": { "type": "object", "description": "Last time the score was updated (Firestore Timestamp)" }
+      },
+      "required": ["uid", "displayName", "chips", "totalScore"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "A detailed record of a score submission for admin tracking",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "chips": { "type": "integer" },
+        "totalScore": { "type": "integer" },
+        "source": { "type": "string" },
+        "timestamp": { "type": "object", "description": "Submission timestamp (Firestore Timestamp)" }
+      },
+      "required": ["uid", "displayName", "chips", "totalScore", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/game_sessions/{sessionId}": {
+      "schema": "GameSession",
+      "description": "Historical game sessions"
+    },
+    "/leaderboard/{userId}": {
+      "schema": "LeaderboardEntry",
+      "description": "Public leaderboard entries"
+    },
+    "/submissions/{submissionId}": {
+      "schema": "Submission",
+      "description": "Detailed submissions for admin"
+    }
+  }
+}

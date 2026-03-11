@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Niu-Niu Master</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap');
+    
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .bg-casino-felt {
+      background-color: #053b19;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(20, 140, 60, 0.3) 0%, rgba(5, 40, 20, 1) 100%),
+        url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+      box-shadow: inset 0 0 200px rgba(0,0,0,0.8);
+      position: relative;
+    }
+
+    .bg-casino-felt::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80vh;
+      height: 80vh;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23fde047' fill-opacity='0.02' d='M256 128c-44.2 0-80 35.8-80 80s35.8 80 80 80 80-35.8 80-80-35.8-80-80-80zm128 0c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zm-256 0c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .cinzel { font-family: 'Cinzel', serif; }
+    
+    .gold-gradient { 
+      background: linear-gradient(135deg, #fde047 0%, #eab308 50%, #854d0e 100%); 
+      box-shadow: 0 4px 15px rgba(234, 179, 8, 0.3);
+    }
+    
+    .gold-text { 
+      background: linear-gradient(to bottom, #fde047, #eab308); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+    }
+
+    .red-gradient { 
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      box-shadow: 0 4px 15px rgba(185, 28, 28, 0.3);
+    }
+
+    .perspective-1000 { perspective: 1000px; }
+    
+    .card-inner {
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    
+    .card-flipped { transform: rotateY(180deg); }
+    
+    .card-back, .card-front {
+      backface-visibility: hidden;
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      border-radius: 0.75rem;
+    }
+    
+    .card-front { 
+      transform: rotateY(180deg); 
+      background: #ffffff;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-back {
+      background: #7f1d1d;
+      background-image: 
+        radial-gradient(circle at center, #991b1b 0%, #450a0a 100%);
+      border: 4px solid #fde047;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+    /* Intense Effects */
+    @keyframes shake {
+      0%, 100% { transform: translate(0, 0); }
+      10%, 30%, 50%, 70%, 90% { transform: translate(-2px, -1px); }
+      20%, 40%, 60%, 80% { transform: translate(2px, 1px); }
+    }
+    .animate-shake { animation: shake 0.2s infinite; }
+
+    @keyframes vignette-pulse {
+      0%, 100% { box-shadow: inset 0 0 150px rgba(0,0,0,0.7); }
+      50% { box-shadow: inset 0 0 200px rgba(220,38,38,0.5); }
+    }
+    .vignette-critical { animation: vignette-pulse 0.5s infinite; }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .mask-fade-edges {
+      mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+
+    @media (max-width: 640px) {
+      .mask-fade-edges {
+        mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+      }
+    }
+
+    /* Better card scaling for small screens */
+    @media (max-width: 400px) {
+      .card-container {
+        scale: 0.85;
+      }
+    }
+
+    /* Height-based adjustments to prevent clipping on short screens */
+    @media (max-height: 700px) {
+      .card-ui-container {
+        scale: 0.8;
+      }
+      .center-info-section {
+        height: 4rem !important;
+      }
+      .game-header {
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+      }
+      .game-footer {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .card-ui-container {
+        scale: 0.7;
+      }
+      .center-info-section {
+        height: 3rem !important;
+      }
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-casino-felt">
+  <div id="root" class="h-full w-full overflow-hidden relative z-10"></div>
+  <script type="module" src="index.tsx"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
