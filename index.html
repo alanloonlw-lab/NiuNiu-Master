@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
+
   <!-- Social Share Info -->
   <title>Niu Niu Master</title>
   <meta property="og:title" content="Niu Niu Master - Test Your Luck!">
@@ -14,7 +14,7 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.tailwindcss.com"></script> 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap');
     
@@ -145,29 +145,33 @@
     }
 
     /* Height-based adjustments to prevent clipping on short screens */
-    @media (max-height: 700px) {
+    @media (max-height: 750px) {
       .card-ui-container {
         scale: 0.8;
       }
       .center-info-section {
-        height: 4rem !important;
+        height: 3.5rem !important;
       }
       .game-header {
         padding-top: 0.25rem !important;
         padding-bottom: 0.25rem !important;
       }
       .game-footer {
-        padding-top: 1rem !important;
-        padding-bottom: 1rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
       }
     }
 
-    @media (max-height: 600px) {
+    @media (max-height: 650px) {
       .card-ui-container {
         scale: 0.7;
       }
       .center-info-section {
-        height: 3rem !important;
+        height: 2.5rem !important;
+      }
+      .game-footer {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
       }
     }
   </style>

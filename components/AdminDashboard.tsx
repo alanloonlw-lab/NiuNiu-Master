@@ -98,7 +98,7 @@ const AdminDashboard: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden">
+            <div className="bg-white/5 border border-white/10 rounded-3xl overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-black/40 text-[10px] font-black uppercase tracking-widest text-stone-500">

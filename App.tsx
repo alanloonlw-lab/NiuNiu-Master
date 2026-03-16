@@ -195,16 +195,20 @@ const App: React.FC = () => {
     try {
       sounds.playSelect();
       await signInWithPopup(auth, googleProvider);
+      setIsLoginSelectionOpen(false);
     } catch (error: any) {
       console.error("Login failed:", error);
-      if (error.code === 'auth/popup-closed-by-user') {
+      const errorMessage = error.message || "";
+      const errorCode = error.code || "";
+      
+      if (errorCode === 'auth/popup-closed-by-user' || errorMessage.includes('auth/popup-closed-by-user')) {
         setLoginError("Login window was closed. Please try again and keep the window open.");
-      } else if (error.code === 'auth/cancelled-popup-request') {
+      } else if (errorCode === 'auth/cancelled-popup-request' || errorMessage.includes('auth/cancelled-popup-request')) {
         // Ignore, this happens if multiple popups are triggered
-      } else if (error.code === 'auth/operation-not-allowed') {
+      } else if (errorCode === 'auth/operation-not-allowed' || errorMessage.includes('auth/operation-not-allowed')) {
         setLoginError(`Google login is not enabled in the Firebase Console. Please enable it in the Authentication > Sign-in method tab.`);
       } else {
-        setLoginError("Login failed. Please check your internet connection or try again later.");
+        setLoginError(`Login failed: ${errorMessage || "Please check your internet connection or try again later."}`);
       }
     } finally {
       setIsLoggingIn(false);
@@ -511,40 +515,40 @@ const App: React.FC = () => {
       )}
 
       <div className={`min-h-screen h-screen overflow-hidden flex flex-col items-center bg-casino-felt text-white font-sans transition-all duration-700 ${isCriticalTimer ? 'animate-shake vignette-critical' : ''}`}>
-      <header className="game-header w-full bg-black/60 backdrop-blur-2xl border-b border-white/5 shrink-0 z-50 relative px-4 py-2 sm:py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+      <header className="game-header w-full bg-black/60 backdrop-blur-2xl border-b border-white/5 shrink-0 z-50 relative px-2 sm:px-4 py-1.5 sm:py-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-3 items-center gap-1">
           {/* Left: Bank Info */}
-          <div className="flex items-center gap-2">
-            <div className="bg-stone-900/80 border border-white/10 rounded-xl sm:rounded-2xl px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-3 shadow-inner">
+          <div className="flex items-center gap-1 sm:gap-2 justify-self-start">
+            <div className="bg-stone-900/80 border border-white/10 rounded-lg sm:rounded-2xl px-2 py-1 sm:px-4 sm:py-2 flex items-center gap-2 sm:gap-3 shadow-inner">
               <div className="flex flex-col">
-                <span className="text-[7px] sm:text-[10px] font-black text-stone-500 uppercase tracking-widest">Wallet</span>
-                <span className="text-xs sm:text-lg font-black gold-text leading-none">{balance.toLocaleString()}</span>
+                <span className="text-[6px] sm:text-[10px] font-black text-stone-500 uppercase tracking-widest">Wallet</span>
+                <span className="text-[10px] sm:text-lg font-black gold-text leading-none">{balance.toLocaleString()}</span>
               </div>
-              <div className="w-[1px] h-4 sm:h-6 bg-white/10"></div>
+              <div className="w-[1px] h-3 sm:h-6 bg-white/10"></div>
               <div className="flex flex-col">
-                <span className="text-[7px] sm:text-[10px] font-black text-yellow-500/50 uppercase tracking-widest">Earned</span>
-                <span className="text-xs sm:text-lg font-black text-yellow-400 leading-none">{totalEarnings.toLocaleString()}</span>
+                <span className="text-[6px] sm:text-[10px] font-black text-yellow-500/50 uppercase tracking-widest">Earned</span>
+                <span className="text-[10px] sm:text-lg font-black text-yellow-400 leading-none">{totalEarnings.toLocaleString()}</span>
               </div>
             </div>
             <button 
               onClick={() => { sounds.playSelect(); setIsLeaderboardOpen(true); }} 
-              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-lg sm:rounded-xl hover:bg-yellow-500/20 transition-all active:scale-90"
+              className="w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-lg sm:rounded-xl hover:bg-yellow-500/20 transition-all active:scale-90"
             >
-              <i className="fa-solid fa-trophy text-xs sm:text-base"></i>
+              <i className="fa-solid fa-trophy text-[10px] sm:text-base"></i>
             </button>
           </div>
 
           {/* Center: Logo & Round */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none">
-            <Logo onClick={handleLogoClick} className="scale-[0.4] sm:scale-75 md:scale-90 pointer-events-auto" />
-            <div className={`text-[6px] sm:text-[10px] font-black tracking-[0.2em] uppercase transition-colors -mt-1 sm:mt-0 ${isExtremeIntensity ? 'text-red-500 animate-pulse' : 'text-yellow-500/40'}`}>
-              Round {round}/{MAX_ROUNDS}
+          <div className="flex flex-col items-center justify-self-center pointer-events-none">
+            <Logo onClick={handleLogoClick} className="scale-[0.35] sm:scale-75 md:scale-90 pointer-events-auto" />
+            <div className={`text-[6px] sm:text-[10px] font-black tracking-[0.2em] uppercase transition-colors -mt-2 sm:mt-0 ${isExtremeIntensity ? 'text-red-500 animate-pulse' : 'text-yellow-500/40'}`}>
+              R{round}/{MAX_ROUNDS}
             </div>
           </div>
 
           {/* Right: User & Actions */}
-          <div className="flex items-center gap-1.5 sm:gap-3">
-            <div className="hidden sm:flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-3 justify-self-end">
+            <div className="hidden md:flex items-center gap-2">
               {user ? (
                 <div className="flex items-center gap-2">
                   <img src={user.photoURL || ''} alt="" className="w-8 h-8 rounded-full border border-white/20" referrerPolicy="no-referrer" />
@@ -563,18 +567,18 @@ const App: React.FC = () => {
 
             <button 
               onClick={() => { sounds.playSelect(); setShowShareModal(true); }}
-              className="px-2 sm:px-4 h-8 sm:h-10 flex items-center justify-center bg-white/5 text-white border border-white/10 rounded-lg sm:rounded-xl hover:bg-white/10 transition-all active:scale-90 gap-2"
+              className="px-1.5 sm:px-4 h-7 sm:h-10 flex items-center justify-center bg-white/5 text-white border border-white/10 rounded-lg sm:rounded-xl hover:bg-white/10 transition-all active:scale-90 gap-1 sm:gap-2"
             >
               <i className="fa-solid fa-share-nodes text-[10px] sm:text-sm"></i>
-              <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest hidden xs:inline">Share</span>
+              <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest hidden lg:inline">Share</span>
               <div className="bg-white/10 px-1 rounded text-[7px] sm:text-[9px] font-black">{shareCount}</div>
             </button>
 
             <button 
               onClick={() => { sounds.playSelect(); setIsRulesOpen(true); }}
-              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-white/5 text-stone-400 border border-white/10 rounded-lg sm:rounded-xl hover:bg-white/10 transition-all active:scale-90"
+              className="w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center bg-white/5 text-stone-400 border border-white/10 rounded-lg sm:rounded-xl hover:bg-white/10 transition-all active:scale-90"
             >
-              <i className="fa-solid fa-circle-info text-xs sm:text-base"></i>
+              <i className="fa-solid fa-circle-info text-[10px] sm:text-base"></i>
             </button>
           </div>
         </div>
@@ -583,13 +587,13 @@ const App: React.FC = () => {
       {/* Persistent Floating Rules Button - High Visibility */}
       <button 
         onClick={() => { sounds.playSelect(); setIsRulesOpen(true); }}
-        className="fixed left-4 top-24 sm:top-28 z-[60] flex items-center gap-2 bg-black/40 border border-yellow-500/50 text-yellow-500 px-3 py-2 rounded-full backdrop-blur-md shadow-lg hover:bg-yellow-500/20 hover:scale-105 transition-all animate-pulse duration-[3s]"
+        className="fixed left-2 top-16 sm:left-4 sm:top-28 z-[60] flex items-center gap-2 bg-black/40 border border-yellow-500/50 text-yellow-500 px-2 py-1.5 sm:px-3 sm:py-2 rounded-full backdrop-blur-md shadow-lg hover:bg-yellow-500/20 hover:scale-105 transition-all animate-pulse duration-[3s]"
       >
-        <i className="fa-solid fa-circle-info text-sm sm:text-lg"></i>
-        <span className="text-[9px] sm:text-xs font-black uppercase tracking-widest hidden sm:inline">How to Play</span>
+        <i className="fa-solid fa-circle-info text-xs sm:text-lg"></i>
+        <span className="text-[8px] sm:text-xs font-black uppercase tracking-widest hidden sm:inline">How to Play</span>
       </button>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto flex flex-col justify-around gap-1 sm:gap-4 items-center px-4 sm:px-8 relative py-1 sm:py-4 overflow-y-auto no-scrollbar">
+      <main className="flex-1 w-full max-w-7xl mx-auto flex flex-col justify-center gap-2 sm:gap-4 items-center px-2 sm:px-8 relative py-2 sm:py-4 overflow-y-auto no-scrollbar">
         {showSpeedAlert && (
           <div className="absolute inset-0 flex items-center justify-center z-[100] bg-black/60 backdrop-blur-md animate-in fade-in zoom-in duration-300">
              <div className="text-center p-6 sm:p-10 bg-stone-900/95 rounded-[2rem] sm:rounded-[4rem] border-2 border-red-500/50 shadow-[0_0_50px_rgba(239,68,68,0.3)]">
@@ -754,7 +758,7 @@ const App: React.FC = () => {
             <div className="flex flex-col gap-4">
               <button 
                 disabled={isLoggingIn}
-                onClick={() => { handleLogin(); setIsLoginSelectionOpen(false); }}
+                onClick={() => { handleLogin(); }}
                 className="w-full bg-white text-stone-900 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-stone-100 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-3"
               >
                 <i className="fa-brands fa-google text-red-500 text-xl"></i>
@@ -847,6 +851,10 @@ const App: React.FC = () => {
             const newCount = shareCount + 1;
             setShareCount(newCount);
             localStorage.setItem('niu_niu_share_count', newCount.toString());
+            
+            const now = Date.now();
+            setLastSharedAt(now);
+            localStorage.setItem('niu_niu_last_shared', now.toString());
           }}
           onClose={() => { setShowShareModal(false); resetGame(); }}
           isBankrupt={isBankrupt}

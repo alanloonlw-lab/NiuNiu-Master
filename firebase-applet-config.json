@@ -6,5 +6,6 @@
   "databaseURL": "https://gen-lang-client-0207828706-default-rtdb.asia-southeast1.firebasedatabase.app",
   "storageBucket": "gen-lang-client-0207828706.firebasestorage.app",
   "messagingSenderId": "664089370724",
-  "measurementId": "G-CK53WL5L7K"
+  "measurementId": "G-CK53WL5L7K",
+  "firestoreDatabaseId": "(default)"
 }

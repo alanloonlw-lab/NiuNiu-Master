@@ -30,9 +30,10 @@ const ShareModal: React.FC<ShareModalProps> = ({ winAmount, onClose, onShareSucc
     if (finalUrl) {
       window.open(finalUrl, '_blank', 'width=600,height=400');
       onShareSuccess?.();
+      // Close faster to allow immediate play
       setTimeout(() => {
         onClose();
-      }, 1000);
+      }, 300);
     }
   };
 
@@ -47,7 +48,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ winAmount, onClose, onShareSucc
       setTimeout(() => {
         setCopyStatus(null);
         onClose();
-      }, 1500);
+      }, 800);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
