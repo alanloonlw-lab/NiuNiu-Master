@@ -75,7 +75,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
 const INITIAL_BALANCE = 3000;
 const MAX_ROUNDS = 20;
-const BET_INCREMENTS = [10, 50, 100, 500, 1000, 5000, 10000];
+const BET_INCREMENTS = [10, 50, 100, 500, 1000, 5000, 10000, 50000];
 
 const App: React.FC = () => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
