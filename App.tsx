@@ -783,61 +783,61 @@ const App: React.FC = () => {
         <RulesModal onClose={() => setIsRulesOpen(false)} />
       )}
 
-      {showNameModal && (
+            {showNameModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in">
            <div className="bg-stone-900 border-2 border-yellow-500/50 rounded-[3rem] p-8 sm:p-12 w-full max-w-xs sm:max-w-md text-center shadow-2xl">
               <Logo className="mb-6" />
-              <h2 className="text-2xl sm:text-4xl font-black cinzel gold-text mb-2 uppercase">HALL OF FAME</h2>
+              <h2 className="text-2xl sm:text-4xl font-black cinzel gold-text mb-2 uppercase">GAME OVER</h2>
               <p className="text-stone-500 text-[10px] sm:text-xs mb-8 font-black uppercase tracking-[0.3em]">Final Chips: {balance.toLocaleString()}</p>
               
               {!user ? (
-                <div className="space-y-6">
-                  <p className="text-stone-400 text-sm">Login with Google to save your score and compete on the leaderboard!</p>
-                  <div className="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-2xl">
-                    <p className="text-[10px] text-yellow-500/80 font-bold uppercase tracking-wider leading-relaxed">
-                      Guest play is limited. Login now to unlock unlimited rounds and permanent progress!
-                    </p>
+                // GUEST FLOW: Two Options
+                <div className="space-y-4">
+                  {/* OPTION 1: LOGIN */}
+                  <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl text-left">
+                    <p className="text-xs text-blue-300 font-bold mb-2 uppercase">Unlimited Play + Save Score</p>
+                    <button 
+                      disabled={isLoggingIn}
+                      onClick={() => { handleLogin(); }} 
+                      className="w-full py-3 bg-white text-stone-900 font-black rounded-xl text-sm hover:bg-stone-100 active:scale-95 flex items-center justify-center gap-2 shadow-lg"
+                    >
+                      <i className="fa-brands fa-google text-red-500"></i> LOGIN WITH GOOGLE
+                    </button>
                   </div>
-                  {loginError && (
-                    <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-xs font-bold animate-in fade-in slide-in-from-top-2">
-                      {loginError}
-                    </div>
-                  )}
-              <div className="flex flex-col gap-3">
-                <button 
-                  disabled={isLoggingIn}
-                  className="w-full py-4 bg-blue-600 text-white font-black rounded-2xl text-lg hover:bg-blue-700 active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl" 
-                  onClick={() => setIsLoginSelectionOpen(true)}
-                >
-                  <i className="fa-solid fa-right-to-bracket"></i> 
-                  LOGIN TO SAVE PROGRESS
-                </button>
-              </div>
+
+                  <div className="flex items-center gap-2 opacity-30">
+                    <div className="flex-1 h-px bg-white/20"></div>
+                    <span className="text-[10px] text-stone-400">OR</span>
+                    <div className="flex-1 h-px bg-white/20"></div>
+                  </div>
+
+                  {/* OPTION 2: SHARE */}
+                  <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-2xl text-left">
+                    <p className="text-xs text-yellow-300 font-bold mb-2 uppercase">No Registration?</p>
+                    <button 
+                      onClick={() => { setShowNameModal(false); setShowShareModal(true); }} 
+                      className="w-full gold-gradient py-3 rounded-xl text-stone-900 font-black uppercase text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg"
+                    >
+                      SHARE TO PLAY 1 HOUR
+                    </button>
+                  </div>
                 </div>
               ) : (
+                // LOGGED IN FLOW: Just Save
                 <div className="space-y-6">
-                  <div className="flex flex-col items-center gap-3">
-                    <img src={user.photoURL || ''} alt="" className="w-16 h-16 rounded-full border-2 border-yellow-500/50" referrerPolicy="no-referrer" />
-                    <div className="w-full">
-                      <label className="text-[10px] text-stone-500 font-black uppercase tracking-widest mb-2 block text-left">Custom Display Name</label>
-                      <input 
-                        type="text" 
-                        value={customName}
-                        onChange={(e) => setCustomName(e.target.value)}
-                        placeholder="Enter your name"
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white font-black focus:border-yellow-500/50 outline-none transition-all"
-                        maxLength={20}
-                      />
-                    </div>
-                  </div>
-                  <button disabled={isSubmittingScore || !customName.trim()} className="w-full py-4 sm:py-5 gold-gradient text-stone-900 font-black rounded-2xl text-xl hover:scale-[1.02] active:scale-95 disabled:opacity-50" onClick={handleSubmitScore}>
-                    {isSubmittingScore ? 'SUBMITTING...' : 'SUBMIT SCORE'}
+                   <div className="flex flex-col items-center gap-2">
+                     <img src={user.photoURL || ''} alt="" className="w-12 h-12 rounded-full border-2 border-yellow-500/50" referrerPolicy="no-referrer" />
+                     <p className="text-stone-300 text-sm">Saving score as <span className="text-yellow-400 font-bold">{customName || user.displayName}</span></p>
+                   </div>
+                   <button disabled={isSubmittingScore} className="w-full py-4 gold-gradient text-stone-900 font-black rounded-2xl text-xl hover:scale-[1.02] active:scale-95 disabled:opacity-50" onClick={handleSubmitScore}>
+                    {isSubmittingScore ? 'SAVING...' : 'SAVE & PLAY AGAIN'}
                   </button>
                 </div>
               )}
               
-              <button className="mt-6 text-stone-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors" onClick={() => { setShowNameModal(false); if (user) resetGame(); else setShowShareModal(true); }}>
-                {user ? 'Play Again' : 'Skip & Share to Continue'}
+              {/* Close Button */}
+              <button className="mt-8 text-stone-600 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors" onClick={() => setShowNameModal(false)}>
+                Close
               </button>
            </div>
         </div>
