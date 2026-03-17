@@ -51,128 +51,28 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       }
 
       return (
-       <ErrorBoundary>
-        {/* 1. OVERLAYS (Modals & Alerts) - Render first so they sit on top */}
-        {showShareRequired && ( /* ... existing share required modal code ... */ )}
-
-        {/* 2. MAIN CONTAINER - Fixed Height to prevent scroll */}
-        <div className={`h-screen w-full overflow-hidden flex flex-col bg-casino-felt text-white font-sans relative ${isCriticalTimer ? 'animate-shake vignette-critical' : ''}`}>
-        
-         {/* --- HEADER (Compact) --- */}
-         <header className="shrink-0 z-50 bg-black/50 backdrop-blur-md border-b border-white/5 px-2 py-2 sm:py-4">
-          <div className="max-w-5xl mx-auto grid grid-cols-3 items-center">
-            
-            {/* Left: Wallet & Menu */}
-            <div className="flex items-center gap-2 justify-self-start">
-              <div className="bg-stone-900/80 rounded-lg px-2 py-1 sm:px-4 sm:py-2 border border-white/10 shadow-inner">
-                <div className="text-[8px] sm:text-[10px] text-stone-400 font-bold">CHIPS</div>
-                <div className="text-sm sm:text-xl font-black gold-text leading-none">{balance.toLocaleString()}</div>
-              </div>
-              <button onClick={() => setIsLeaderboardOpen(true)} className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-lg text-yellow-500 active:scale-90">
-                <i className="fa-solid fa-trophy text-sm sm:text-base"></i>
-              </button>
+        <div className="min-h-screen bg-casino-felt flex items-center justify-center p-4">
+          <div className="bg-stone-900/90 border-2 border-yellow-500/50 rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+            <div className="text-yellow-500 text-5xl mb-4">
+              <i className="fas fa-exclamation-triangle"></i>
             </div>
-
-            {/* Center: Logo & Round */}
-            <div className="flex flex-col items-center justify-self-center pointer-events-none">
-              <div className="text-[8px] sm:text-xs font-bold text-stone-500 tracking-widest">ROUND {round}/{MAX_ROUNDS}</div>
-              {/* You can replace this text with your <Logo /> component if desired, set scale small */}
-              <div className="cinzel text-lg sm:text-2xl font-black gold-text">NIU NIU</div>
-            </div>
-
-            {/* Right: User Actions */}
-            <div className="flex items-center gap-2 justify-self-end">
-              <button onClick={() => setShowShareModal(true)} className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-lg active:scale-90">
-                 <i className="fa-solid fa-share-nodes text-sm sm:text-base text-white"></i>
-              </button>
-              {user ? (
-                 <img src={user.photoURL || ''} className="w-8 h-8 rounded-full border border-white/20" alt="User" />
-              ) : (
-                <button onClick={() => setIsLoginSelectionOpen(true)} className="px-2 py-1 sm:px-3 sm:py-1.5 bg-blue-600 rounded-lg text-[10px] sm:text-xs font-bold">Login</button>
-              )}
-            </div>
+            <h2 className="cinzel text-2xl text-white mb-4">System Error</h2>
+            <p className="text-stone-300 mb-6">{errorMessage}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="gold-gradient px-8 py-3 rounded-full text-stone-900 font-bold hover:scale-105 transition-transform"
+            >
+              RELOAD GAME
+            </button>
           </div>
-        </header>
+        </div>
+      );
+    }
 
-        {/* --- MAIN GAME AREA (Grows to fill space) --- */}
-        <main className="flex-1 flex flex-col justify-center items-center relative overflow-hidden px-2 py-4 gap-4">
-          
-          {/* Dealer Section (Top of Middle) */}
-          <div className="w-full flex flex-col items-center shrink-0">
-             <div className="text-[10px] sm:text-xs font-bold text-stone-500 tracking-widest mb-2">BANKER</div>
-             <div className="flex gap-1 sm:gap-2">
-                {/* Dealer Cards Logic Here */}
-                {dealerHand.length > 0 ? dealerHand.map((c) => <CardUI key={c.id} card={c} isFlipped={phase === GamePhase.RESULT} />) : /* Placeholder cards */}
-             </div>
-             {phase === GamePhase.RESULT && dealerResult && (
-               <div className="mt-2 px-4 py-1 bg-red-600 rounded-full text-xs sm:text-sm font-bold border border-white/20 shadow-lg">{dealerResult.type}</div>
-             )}
-          </div>
+    return this.props.children;
+  }
+}
 
-          {/* Center Status (Timer / Result / Message) */}
-          <div className="flex flex-col items-center justify-center text-center py-4">
-             {phase === GamePhase.SELECTING ? (
-                <div className="text-5xl sm:text-7xl font-black text-yellow-400 drop-shadow-lg">{timeLeft}s</div>
-             ) : phase === GamePhase.RESULT ? (
-                <div className="animate-in zoom-in">
-                   <div className="text-2xl sm:text-4xl font-black cinzel gold-text mb-2">{message}</div>
-                   {payout > 0 && <div className="text-xl sm:text-3xl text-green-400 font-bold">+{payout}</div>}
-                </div>
-             ) : (
-                <div className="text-stone-500 text-sm font-bold uppercase tracking-widest animate-pulse">Place Your Bet</div>
-             )}
-          </div>
-
-          {/* Player Section (Bottom of Middle) */}
-          <div className="w-full flex flex-col items-center shrink-0">
-             <div className="flex gap-1 sm:gap-2">
-                {/* Player Cards Logic Here */}
-                {playerHand.length > 0 ? playerHand.map((c, i) => ( 
-                   <CardUI key={c.id} card={c} isFlipped={true} isSelected={selectedIndices.includes(i)} onClick={() => { /* selection logic */ }} /> 
-                )) : /* Placeholder cards */}
-             </div>
-             <div className="text-[10px] sm:text-xs font-bold text-stone-500 tracking-widest mt-2">
-                {user?.displayName || 'PLAYER'}
-             </div>
-             {phase === GamePhase.RESULT && playerResult && (
-               <div className="mt-2 px-4 py-1 bg-yellow-500 text-black rounded-full text-xs sm:text-sm font-bold shadow-lg">{playerResult.type}</div>
-             )}
-          </div>
-
-        </main>
-
-        {/* --- FOOTER (Fixed at Bottom) --- */}
-        <footer className="shrink-0 z-40 bg-stone-900/80 backdrop-blur-xl border-t border-white/10 px-2 py-4 sm:py-6">
-          <div className="max-w-lg mx-auto">
-            {phase === GamePhase.BETTING ? (
-               <div className="flex flex-col gap-3">
-                  {/* Betting Chips Horizontal Scroll */}
-                  <div className="flex justify-center gap-2 flex-wrap">
-                    {BET_INCREMENTS.map(val => (
-                       <button key={val} onClick={() => setBet(b => b + val)} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/10 border border-white/20 rounded-xl text-xs sm:text-base font-bold active:scale-90">
-                         +{val}
-                       </button>
-                    ))}
-                  </div>
-                  <button onClick={handleDeal} className="w-full py-3 sm:py-4 red-gradient rounded-xl text-lg sm:text-2xl font-black uppercase shadow-lg active:scale-95 disabled:opacity-30" disabled={bet <= 0}>
-                    DEAL {bet > 0 && <span className="text-yellow-300">({bet})</span>}
-                  </button>
-               </div>
-            ) : phase === GamePhase.SELECTING ? (
-               <button onClick={handleConfirm} className="w-full py-4 gold-gradient rounded-xl text-lg sm:text-2xl font-black uppercase shadow-lg active:scale-95">
-                 {selectedIndices.length === 3 ? 'CONFIRM' : 'SELECT 3'}
-               </button>
-            ) : (
-               <button onClick={nextRound} className="w-full py-4 gold-gradient rounded-xl text-lg sm:text-2xl font-black uppercase shadow-lg active:scale-95">
-                 NEXT ROUND
-               </button>
-            )}
-          </div>
-        </footer>
-
-      </div>
-    </ErrorBoundary>
-);
 const INITIAL_BALANCE = 3000;
 const MAX_ROUNDS = 20;
 const BET_INCREMENTS = [10, 50, 100, 500, 1000, 5000, 10000, 50000];
